@@ -2,7 +2,7 @@ const Categories = require('../models/categoriesModel');
 
 class CategoriesController {
 
-    static async getAllCategories(res) {
+    static async getAllCategories(req, res) {
         try {
             const categorie = await Categories.getCategories();
             res.json(categorie);
