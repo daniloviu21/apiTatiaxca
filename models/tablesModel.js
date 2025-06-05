@@ -15,7 +15,7 @@ class Tables {
 
     static async update(id, data){
         const {numero, ubicacion, estado} = data;
-        const result = await pool.query('UPDATE mesas SET numero = $1, ubicacion = $2, estado = $2, updated_at = now() WHERE id = $3 and deleted_at is null RETURNING *', [numero, ubicacion, estado, id]);
+        const result = await pool.query('UPDATE mesas SET numero = $1, ubicacion = $2, estado = $3, updated_at = now() WHERE id = $4 and deleted_at is null RETURNING *', [numero, ubicacion, estado, id]);
         return result.rows[0];
     }
 
