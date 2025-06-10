@@ -7,4 +7,4 @@ router.post('/roles', RolesController.createRole);
 router.put('/roles/:id', RolesController.updateRole);
 router.delete('/roles/:id', RolesController.deleteRole);
 
-module.exports = router;roles
+module.exports = router;
