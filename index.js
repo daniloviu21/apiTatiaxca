@@ -6,8 +6,16 @@ const rolesRoutes = require('./routes/rolesRoutes');
 const ingredientsRoutes = require('./routes/ingredientsRoutes');
 const usersRoutes = require('./routes/usersRoutes');
 const employeesRoutes = require('./routes/employeesRoutes');
+const cors = require('cors');
 require('dotenv').config();
 const app = express();
+
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+}));
 
 app.use(express.json());
 
