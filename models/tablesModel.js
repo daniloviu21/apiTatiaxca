@@ -9,7 +9,7 @@ class Tables {
 
     static async create(data) {
         const {numero, ubicacion, estado} = data;
-        const result = await pool.query('INSERT INTO mesas (numero, descripcion, estado) VALUES ($1, $2, $3) RETURNING *', [numero, ubicacion, estado]);
+        const result = await pool.query('INSERT INTO mesas (numero, ubicacion, estado) VALUES ($1, $2, $3) RETURNING *', [numero, ubicacion, estado]);
         return result.rows[0];
     }
 
