@@ -6,9 +6,11 @@ const rolesRoutes = require('./routes/rolesRoutes');
 const ingredientsRoutes = require('./routes/ingredientsRoutes');
 const usersRoutes = require('./routes/usersRoutes');
 const employeesRoutes = require('./routes/employeesRoutes');
+const suppliesRoutes = require('./routes/suppliesRouter');
+const productsRoutes = require('./routes/productsRoutes');
+const pool = require('./config/db');
 const cors = require('cors');
 require('dotenv').config();
-const pool = require('./config/db'); 
 const app = express();
 
 app.use(cors({
@@ -24,9 +26,12 @@ app.use('/api', categoriesRoutes);
 app.use('/api', tablesRoutes);
 app.use('/api', statusRoutes);
 app.use('/api', rolesRoutes);
+app.use('/api', suppliesRoutes)
 app.use('/api', ingredientsRoutes);
-app.use('/app', usersRoutes);
-app.use('/app', employeesRoutes);
+app.use('/api', usersRoutes);
+app.use('/api', productsRoutes);
+app.use('/api', employeesRoutes)
+
 
 const PORT = process.env.PORT || 3010;
 
