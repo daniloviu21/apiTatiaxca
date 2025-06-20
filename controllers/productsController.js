@@ -2,7 +2,7 @@ const Products = require('../models/productsModel');
 
 class ProductsController {
 
-  static async getAll(req, res) {
+  static async getProducts(req, res) {
     try {
       const product = await Products.getAll();
       res.json(product);
@@ -11,7 +11,7 @@ class ProductsController {
     }
   }
 
-  static async create(req, res) {
+  static async createProduct(req, res) {
     try {
       const product = await Products.create(req.body);
       res.status(201).json(product);
@@ -20,7 +20,7 @@ class ProductsController {
     }
   }
 
-  static async update(req, res) {
+  static async updateProduct(req, res) {
     try {
       const product = await Products.update(req.params.id, req.body);
       if (!producto) return res.status(404).json({ message: 'Producto no encontrado' });
@@ -30,7 +30,7 @@ class ProductsController {
     }
   }
 
-  static async delete(req, res) {
+  static async deleteProduct(req, res) {
     try {
       const product = await Products.delete(req.params.id);
       if (!product) return res.status(404).json({ message: 'Producto no encontrado' });
