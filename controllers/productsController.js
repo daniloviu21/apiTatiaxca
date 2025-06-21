@@ -2,9 +2,9 @@ const Products = require('../models/productsModel');
 
 class ProductsController {
 
-  static async getProducts(req, res) {
+  static async getAllProducts(req, res) {
     try {
-      const product = await Products.getAll();
+      const product = await Products.getAllProducts();
       res.json(product);
     } catch (e) {
       res.status(500).json({ error: e.message });
