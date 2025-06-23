@@ -7,11 +7,15 @@ const ingredientsRoutes = require('./routes/ingredientsRoutes');
 const usersRoutes = require('./routes/usersRoutes');
 const employeesRoutes = require('./routes/employeesRoutes');
 const suppliesRoutes = require('./routes/suppliesRoutes');
-const menuIngredientsController = require('./routes/menuIngredientsRoutes');
-const menuSuppliesController = require('./routes/menuSuppliesRoutes');
+const menuIngredientsRoutes = require('./routes/menuIngredientsRoutes');
+const menuSuppliesRoutes = require('./routes/menuSuppliesRoutes');
+const menuRoutes = require('./routes/menuRoutes');
 const cors = require('cors');
 require('dotenv').config();
 const app = express();
+
+app.use(express.json({ limit: '20mb' }));
+app.use(express.urlencoded({ limit: '20mb', extended: true }));
 
 app.use(cors({
   origin: '*',
@@ -30,8 +34,9 @@ app.use('/api', ingredientsRoutes);
 app.use('/api', usersRoutes);
 app.use('/api', employeesRoutes);
 app.use('/api', suppliesRoutes);
-app.use('/api', menuIngredientsController);
-app.use('/api', menuSuppliesController);
+app.use('/api', menuIngredientsRoutes);
+app.use('/api', menuSuppliesRoutes);
+app.use('/api', menuRoutes);
 
 const PORT = process.env.PORT || 3010;
 
