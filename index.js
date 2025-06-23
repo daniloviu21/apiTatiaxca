@@ -10,6 +10,7 @@ const suppliesRoutes = require('./routes/suppliesRoutes');
 const menuIngredientsRoutes = require('./routes/menuIngredientsRoutes');
 const menuSuppliesRoutes = require('./routes/menuSuppliesRoutes');
 const menuRoutes = require('./routes/menuRoutes');
+const detailOrdersRoutes = require('./routes/detailOrdersRoutes');
 const cors = require('cors');
 require('dotenv').config();
 const app = express();
@@ -37,6 +38,7 @@ app.use('/api', suppliesRoutes);
 app.use('/api', menuIngredientsRoutes);
 app.use('/api', menuSuppliesRoutes);
 app.use('/api', menuRoutes);
+app.use('/api', detailOrdersRoutes);
 
 const PORT = process.env.PORT || 3010;
 
