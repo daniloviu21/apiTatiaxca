@@ -27,6 +27,13 @@ class Menu {
         const result = await pool.query('SELECT * FROM menu WHERE id = $1 AND deleted_at IS NULL', [id]);
         return result.rows[0];
     }
+
+    static async findWithCategoryById(id) {
+        const result = await pool.query(`SELECT m.id, m.nombre, m.descripcion, m.precio, m.imagen_url, c.nombre AS categoria FROM menu m
+        INNER JOIN categorias c ON m.id_categoria = c.id WHERE m.id = $1 AND m.deleted_at IS NULL`, [id]);
+        return result.rows[0];
+    }
+
 }
 
 module.exports = Menu;

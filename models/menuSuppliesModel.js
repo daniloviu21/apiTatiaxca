@@ -12,9 +12,9 @@ class MenuSupplies {
         return result.rows;
     }
 
-    static async create(data) {
+    static async create(data, client = pool) {
         const { id_menu, id_insumo, cantidad } = data;
-        const result = await pool.query(`INSERT INTO menu_insumos (id_menu, id_insumo, cantidad) VALUES ($1, $2, $3) RETURNING *`, [id_menu, id_insumo, cantidad]);
+        const result = await client.query(`INSERT INTO menu_insumos (id_menu, id_insumo, cantidad) VALUES ($1, $2, $3) RETURNING *`, [id_menu, id_insumo, cantidad]);
         return result.rows[0];
     }
 
@@ -27,6 +27,12 @@ class MenuSupplies {
     static async delete(id) {
         const result = await pool.query('DELETE FROM menu_insumos WHERE id = $1 RETURNING *', [id]);
         return result.rows[0];
+    }
+
+    static async getByMenuIdWithNames(id_menu) {
+        const result = await pool.query(`SELECT mi.cantidad, s.nombre FROM menu_insumos mi
+            INNER JOIN insumos s ON mi.id_insumo = s.id WHERE mi.id_menu = $1`, [id_menu]);
+        return result.rows;
     }
 
 }

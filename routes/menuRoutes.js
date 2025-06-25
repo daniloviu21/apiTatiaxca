@@ -6,5 +6,6 @@ router.get('/menu', MenuController.getAll);
 router.post('/menu', MenuController.create);
 router.put('/menu/:id', MenuController.update);
 router.delete('/menu/:id', MenuController.delete);
+router.get('/menu/:id/details', MenuController.getDetails);
 
 module.exports = router;
