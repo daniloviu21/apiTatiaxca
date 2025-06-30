@@ -12,6 +12,7 @@ const menuSuppliesRoutes = require('./routes/menuSuppliesRoutes');
 const menuRoutes = require('./routes/menuRoutes');
 const detailOrdersRoutes = require('./routes/detailOrdersRoutes');
 const ordersRoutes = require('./routes/ordersRoutes');
+const orderDetailsRoutes = require('./routes/orderDetails');
 const cors = require('cors');
 require('dotenv').config();
 const app = express();
@@ -41,6 +42,7 @@ app.use('/api', menuSuppliesRoutes);
 app.use('/api', menuRoutes);
 app.use('/api', detailOrdersRoutes);
 app.use('/api', ordersRoutes);
+app.use('/api', orderDetailsRoutes);
 
 const PORT = process.env.PORT || 3010;
 
