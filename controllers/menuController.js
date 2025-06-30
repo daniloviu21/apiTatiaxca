@@ -152,6 +152,15 @@ class MenuController {
         }
     }
 
+    static async getGroupedByCategory(req, res) {
+        try {
+            const data = await Menu.getGroupedByCategory();
+            res.json(data);
+        } catch (e) {
+            res.status(500).json({ error: e.message });
+        }
+    }
+
 }
 
 module.exports = MenuController;
