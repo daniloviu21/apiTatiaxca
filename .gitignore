@@ -12,3 +12,7 @@ Thumbs.db
 
 # Ignorar archivos de configuración de editor
 .vscode/
+
+# Ignorar Docker y volumen de base de datos
+pgdata/
+docker-compose.override.yml
