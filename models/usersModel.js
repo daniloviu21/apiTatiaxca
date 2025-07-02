@@ -32,7 +32,8 @@ class Users {
     }
 
     static async findByCredentials(correo, password) {
-        const result = await pool.query('SELECT * FROM usuarios WHERE correo = $1 AND PGP_SYM_DECRYPT(password::bytea, $2::text) = $3',[correo, 'AES_KEY', password]);
+        const result = await pool.query(`SELECT u.*, r.rol FROM usuarios u 
+        JOIN roles r ON u.id_rol = r.id WHERE u.correo = $1 AND PGP_SYM_DECRYPT(u.password::bytea, $2::text) = $3 AND u.deleted_at IS NULL`, [correo, 'AES_KEY', password]);
         return result.rows[0];
     }
 

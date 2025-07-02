@@ -17,14 +17,14 @@ class Employees {
     }
 
     static async create(data) {
-        const { nombre, apPaterno, apMaterno, telefono, id_usuario } = data;
-        const result = await pool.query('INSERT INTO empleados (nombre, apPaterno, apMaterno, telefono, id_usuario) VALUES ($1, $2, $3, $4, $5) RETURNING *',[nombre, apPaterno, apMaterno, telefono, id_usuario]);
+        const { nombre, appaterno, apmaterno, telefono, id_usuario } = data;
+        const result = await pool.query('INSERT INTO empleados (nombre, appaterno, apmaterno, telefono, id_usuario) VALUES ($1, $2, $3, $4, $5) RETURNING *',[nombre, appaterno, apmaterno, telefono, id_usuario]);
         return result.rows[0];
     }
 
     static async update(id, data) {
-        const { nombre, apPaterno, apMaterno, telefono, id_usuario } = data;
-        const result = await pool.query(`UPDATE empleados SET nombre = $1, apPaterno = $2, apMaterno = $3, telefono = $4, id_usuario = $5, updated_at = now() WHERE id = $6 AND deleted_at IS NULL RETURNING *`,[nombre, apPaterno, apMaterno, telefono, id_usuario, id]);
+        const { nombre, appaterno, apmaterno, telefono, id_usuario } = data;
+        const result = await pool.query('UPDATE empleados SET nombre = $1, appaterno = $2, apmaterno = $3, telefono = $4, id_usuario = $5, updated_at = now() WHERE id = $6 AND deleted_at IS NULL RETURNING *',[nombre, appaterno, apmaterno, telefono, id_usuario, id]);
         return result.rows[0];
     }
 
