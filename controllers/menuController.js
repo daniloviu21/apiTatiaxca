@@ -80,14 +80,18 @@ class MenuController {
     }
 
     static async update(req, res) {
+        const client = await pool.connect();
         try {
             const id = req.params.id;
             const existente = await Menu.findById(id);
             if (!existente) return res.status(404).json({ message: "Producto no encontrado" });
 
-            let { nombre, descripcion, precio, id_categoria, imagen } = req.body;
+            let { nombre, descripcion, precio, id_categoria, imagen, ingredientes, insumos } = req.body;
+
             let imagen_url = existente.imagen_url;
             let imagen_public_id = existente.imagen_public_id;
+
+            await client.query('BEGIN');
 
             if (imagen) {
                 await cloudinary.uploader.destroy(imagen_public_id);
@@ -96,7 +100,7 @@ class MenuController {
                 imagen_public_id = result.public_id;
             }
 
-            const actualizado = await Menu.update(id, {
+            await Menu.update(id, {
                 nombre,
                 descripcion,
                 precio,
@@ -105,9 +109,37 @@ class MenuController {
                 imagen_public_id
             });
 
-            res.json(actualizado);
+            await MenuIngredients.deleteByMenuId(id, client);
+            await MenuSupplies.deleteByMenuId(id, client);
+
+            if (ingredientes && Array.isArray(ingredientes)) {
+                for (const ing of ingredientes) {
+                    await MenuIngredients.create({
+                        id_menu: id,
+                        id_ingrediente: ing.id_ingrediente,
+                        cantidad: ing.cantidad
+                    }, client);
+                }
+            }
+
+            if (insumos && Array.isArray(insumos)) {
+                for (const ins of insumos) {
+                    await MenuSupplies.create({
+                        id_menu: id,
+                        id_insumo: ins.id_insumo,
+                        cantidad: ins.cantidad
+                    }, client);
+                }
+            }
+
+            await client.query('COMMIT');
+            res.json({ message: "Producto actualizado correctamente" });
+
         } catch (e) {
+            await client.query('ROLLBACK');
             res.status(500).json({ error: e.message });
+        } finally {
+            client.release();
         }
     }
 

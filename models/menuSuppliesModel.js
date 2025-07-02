@@ -29,6 +29,10 @@ class MenuSupplies {
         return result.rows[0];
     }
 
+    static async deleteByMenuId(id_menu, client = pool) {
+        await client.query('DELETE FROM menu_insumos WHERE id_menu = $1', [id_menu]);
+    }
+
     static async getByMenuIdWithNames(id_menu) {
         const result = await pool.query(`SELECT mi.cantidad, s.nombre FROM menu_insumos mi
             INNER JOIN insumos s ON mi.id_insumo = s.id WHERE mi.id_menu = $1`, [id_menu]);
