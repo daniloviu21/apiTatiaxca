@@ -3,11 +3,9 @@ const pool = require('../config/db');
 class Employees {
 
     static async getEmployees() {
-    const result = await pool.query(`
-        SELECT e.id,e.nombre,e.apPaterno,e.apMaterno,e.telefono,u.correo,r.rol AS rol FROM empleados e
-        JOIN usuarios u ON e.id_usuario = u.id
-        JOIN roles r ON u.id_rol = r.id
-        WHERE e.deleted_at IS NULL`);
+        const result = await pool.query(`SELECT e.id, e.nombre, e.apPaterno, e.apMaterno, e.telefono, e.id_usuario, u.correo, r.rol AS rol FROM empleados e
+            JOIN usuarios u ON e.id_usuario = u.id
+            JOIN roles r ON u.id_rol = r.id WHERE e.deleted_at IS NULL`);
         return result.rows;
     }
 
