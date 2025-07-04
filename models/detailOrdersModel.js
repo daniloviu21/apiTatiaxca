@@ -8,7 +8,7 @@ class DetailOrders {
     }
 
     static async getByOrderId(orderId) {
-        const result = await pool.query('SELECT * FROM detalle_ordenes WHERE id_order = $1', [orderId]);
+        const result = await pool.query('SELECT * FROM detalle_ordenes WHERE id = $1', [orderId]);
         return result.rows;
     }
 
