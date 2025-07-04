@@ -20,7 +20,7 @@ class OrderDetails {
             p.imagen AS imagen_producto,
             c.nombre AS categoria
         FROM detalle_ordenes d
-        LEFT JOIN productos p ON d.id_menu = p.id
+        LEFT JOIN menu p ON d.id_menu = p.id
         LEFT JOIN categorias c ON p.id_categoria = c.id
         WHERE d.id_orden = $1
         `;
