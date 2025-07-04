@@ -7,7 +7,24 @@ class OrderDetails {
     }
 
     static async getByOrderId(id_orden) {
-        const result = await pool.query('SELECT * FROM detalle_ordenes WHERE id_orden = $1', [id_orden]);
+        const query = `
+        SELECT 
+            d.id,
+            d.id_menu,
+            d.id_orden,
+            d.cantidad,
+            d.subtotal,
+            d.comentario,
+            d.estado_preparacion,
+            p.nombre AS nombre_producto,
+            p.imagen AS imagen_producto,
+            c.nombre AS categoria
+        FROM detalle_ordenes d
+        LEFT JOIN productos p ON d.id_menu = p.id
+        LEFT JOIN categorias c ON p.id_categoria = c.id
+        WHERE d.id_orden = $1
+        `;
+        const result = await pool.query(query, [id_orden]);
         return result.rows;
     }
 
