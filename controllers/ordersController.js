@@ -36,29 +36,37 @@ class OrdersController {
     static async createOrderWithDetails(req, res) {
         const client = await pool.connect();
         try {
-        const { orden, productos } = req.body;
-        await client.query('BEGIN');
+            const { orden, productos } = req.body;
 
-        const nuevaOrden = await Orders.create(orden, client);
+            console.log('Orden recibida:', orden);
+            console.log('Productos recibidos:', productos);
 
-        for (const producto of productos) {
+            await client.query('BEGIN');
+
+            const nuevaOrden = await Orders.create(orden, client);
+
+            for (const producto of productos) {
+            console.log('Insertando producto:', producto);
+
             const detalle = {
-            id_menu: producto.id,
-            id_orden: nuevaOrden.id,
-            cantidad: producto.cantidad || 1,
-            subtotal: producto.precio * (producto.cantidad || 1),
-            comentario: producto.comentario || '',
+                id_menu: producto.id,
+                id_orden: nuevaOrden.id,
+                cantidad: producto.cantidad || 1,
+                subtotal: producto.precio * (producto.cantidad || 1),
+                comentario: producto.comentario || ''
             };
-            await OrderDetails.create(detalle, client);
-        }
 
-        await client.query('COMMIT');
-        res.status(201).json(nuevaOrden);
+            await OrderDetails.create(detalle, client);
+            }
+
+            await client.query('COMMIT');
+            res.status(201).json(nuevaOrden);
         } catch (error) {
-        await client.query('ROLLBACK');
-        res.status(500).json({ error: error.message });
+            await client.query('ROLLBACK');
+            console.error('Error al crear orden con detalles:', error);
+            res.status(500).json({ error: error.message });
         } finally {
-        client.release();
+            client.release();
         }
     }
 
