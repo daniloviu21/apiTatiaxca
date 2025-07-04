@@ -42,17 +42,38 @@ class Menu {
     static async findWithCategoryById(id) {
         const query = `
             SELECT 
-                m.id, m.nombre, m.descripcion, m.precio, m.id_categoria, m.imagen_url, c.nombre AS categoria,
-                COALESCE(json_agg(DISTINCT jsonb_build_object('id', ing.id, 'nombre', ing.nombre, 'cantidad', mi.cantidad)) FILTER (WHERE mi.id_ingrediente IS NOT NULL), '[]') AS ingredientes,
-                COALESCE(json_agg(DISTINCT jsonb_build_object('id', ins.id, 'nombre', ins.nombre, 'cantidad', ms.cantidad)) FILTER (WHERE ms.id_insumo IS NOT NULL), '[]') AS insumos
-            FROM menu m 
+                m.id,
+                m.nombre,
+                m.descripcion,
+                m.precio,
+                m.id_categoria,
+                m.imagen_url,
+                c.nombre AS categoria,
+                COALESCE((
+                    SELECT json_agg(jsonb_build_object(
+                        'id', ing.id,
+                        'nombre', ing.nombre,
+                        'cantidad', mi.cantidad
+                    ))
+                    FROM menu_ingredientes mi
+                    JOIN ingredientes ing ON mi.id_ingrediente = ing.id
+                    WHERE mi.id_menu = m.id
+                ), '[]') AS ingredientes,
+                COALESCE((
+                    SELECT json_agg(jsonb_build_object(
+                        'id', ins.id,
+                        'nombre', ins.nombre,
+                        'cantidad', ms.cantidad
+                    ))
+                    FROM menu_insumos ms
+                    JOIN insumos ins ON ms.id_insumo = ins.id
+                    WHERE ms.id_menu = m.id
+                ), '[]') AS insumos
+            FROM menu m
             JOIN categorias c ON m.id_categoria = c.id
-            LEFT JOIN menu_ingredientes mi ON m.id = mi.id_menu
-            LEFT JOIN ingredientes ing ON mi.id_ingrediente = ing.id
-            LEFT JOIN menu_insumos ms ON m.id = ms.id_menu
-            LEFT JOIN insumos ins ON ms.id_insumo = ins.id
             WHERE m.deleted_at IS NULL AND m.id = $1
-            GROUP BY m.id, c.nombre`;
+            GROUP BY m.id, c.nombre
+        `;
         const result = await pool.query(query, [id]);
         return result.rows[0];
     }
