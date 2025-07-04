@@ -1,4 +1,5 @@
 const Orders = require('../models/ordersModel');
+const OrderDetails = require('../models/orderDetailsModel');
 
 class OrdersController {
 
@@ -29,6 +30,35 @@ class OrdersController {
             res.status(201).json(order);
         } catch (e) {
             res.status(500).json({ error: e.message });
+        }
+    }
+
+    static async createOrderWithDetails(req, res) {
+        const client = await pool.connect();
+        try {
+        const { orden, productos } = req.body;
+        await client.query('BEGIN');
+
+        const nuevaOrden = await Orders.create(orden, client);
+
+        for (const producto of productos) {
+            const detalle = {
+            id_menu: producto.id,
+            id_orden: nuevaOrden.id,
+            cantidad: producto.cantidad || 1,
+            subtotal: producto.precio * (producto.cantidad || 1),
+            comentario: producto.comentario || '',
+            };
+            await OrderDetails.create(detalle, client);
+        }
+
+        await client.query('COMMIT');
+        res.status(201).json(nuevaOrden);
+        } catch (error) {
+        await client.query('ROLLBACK');
+        res.status(500).json({ error: error.message });
+        } finally {
+        client.release();
         }
     }
 

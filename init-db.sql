@@ -138,6 +138,7 @@ CREATE TABLE detalle_ordenes (
     cantidad INT,
     subtotal DECIMAL(7,2),
     comentario TEXT,
+    estado_preparacion VARCHAR(20) DEFAULT 'Pendiente',
     FOREIGN KEY (id_menu) REFERENCES Menu(id),
     FOREIGN KEY (id_orden) REFERENCES Ordenes(id)
 );
