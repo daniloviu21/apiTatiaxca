@@ -17,7 +17,6 @@ class OrderDetails {
             d.comentario,
             d.estado_preparacion,
             p.nombre AS nombre_producto,
-            p.imagen AS imagen_producto,
             c.nombre AS categoria
         FROM detalle_ordenes d
         LEFT JOIN menu p ON d.id_menu = p.id
