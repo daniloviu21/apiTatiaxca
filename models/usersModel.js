@@ -22,8 +22,14 @@ class Users {
 
     static async update(id, data) {
         const { correo, password, id_rol } = data;
-        const result = await pool.query(`UPDATE usuarios SET correo = $1,password = PGP_SYM_ENCRYPT($2, 'AES_KEY'), id_rol = $3, updated_at = now() WHERE id = $4 AND deleted_at IS NULL RETURNING *`,[correo, password, id_rol, id]);
-        return result.rows[0];
+
+        if (password && password.trim() !== '') {
+            const result = await pool.query(`UPDATE usuarios SET correo = $1,password = PGP_SYM_ENCRYPT($2, 'AES_KEY'), id_rol = $3, updated_at = now() WHERE id = $4 AND deleted_at IS NULL RETURNING *`,[correo, password, id_rol, id]);
+            return result.rows[0];
+        } else {
+            const result = await pool.query('UPDATE usuarios SET correo = $1, id_rol = $2, updated_at = now() WHERE id = $3 AND deleted_at IS NULL RETURNING *',[correo, id_rol, id]);
+            return result.rows[0];
+        }
     }
 
     static async delete(id){
