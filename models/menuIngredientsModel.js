@@ -34,7 +34,7 @@ class MenuIngredients {
     }
 
     static async getByMenuIdWithNames(id_menu) {
-        const result = await pool.query(`SELECT mi.cantidad, i.nombre FROM menu_ingredientes mi
+        const result = await pool.query(`SELECT mi.cantidad, i.nombre, i.unidad FROM menu_ingredientes mi
             INNER JOIN ingredientes i ON mi.id_ingrediente = i.id WHERE mi.id_menu = $1`, [id_menu]);
         return result.rows;
     }
