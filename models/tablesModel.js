@@ -7,6 +7,11 @@ class Tables {
         return result.rows;
     }
 
+    static async findById(id) {
+        const result = await pool.query('SELECT * FROM mesas WHERE id = $1 AND deleted_at IS NULL', [id]);
+        return result.rows[0];
+    }
+
     static async create(data) {
         const {numero, ubicacion, estado} = data;
         const result = await pool.query('INSERT INTO mesas (numero, ubicacion, estado) VALUES ($1, $2, $3) RETURNING *', [numero, ubicacion, estado]);

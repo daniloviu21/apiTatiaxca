@@ -3,6 +3,7 @@ const TablesController = require('../controllers/tablesController');
 const router = express.Router();
 
 router.get('/tables', TablesController.getAllTables);
+router.get('/tables/:id', TablesController.getTableById);
 router.post('/tables', TablesController.createTable);
 router.put('/tables/:id', TablesController.updateTable);
 router.delete('/tables/:id', TablesController.deleteTable);

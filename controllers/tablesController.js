@@ -11,6 +11,18 @@ class TablesController {
         }
     }
 
+    static async getTableById(req, res) {
+        try {
+            const table = await Tables.findById(req.params.id);
+            if (!table) {
+                return res.status(404).json({ message: "Mesa no encontrada!" });
+            }
+            res.json(table);
+        } catch (e) {
+            res.status(500).json({ error: e.message });
+        }
+    }
+
     static async createTable(req, res){
         try {
             const table = await Tables.create(req.body);
