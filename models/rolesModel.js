@@ -3,7 +3,7 @@ const pool = require('../config/db');
 class Roles {
 
     static async getRoles() {
-        const result = await pool.query('SELECT * FROM roles');
+        const result = await pool.query('SELECT * FROM roles WHERE deleted_at IS NULL');
         return result.rows;
     }
 

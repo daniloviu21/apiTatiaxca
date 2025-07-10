@@ -3,7 +3,7 @@ const pool = require('../config/db');
 class Status {
 
     static async getStatus() {
-        const result = await pool.query('SELECT * FROM estatus');
+        const result = await pool.query('SELECT * FROM estatus WHERE deleted_at IS NULL');
         return result.rows;
     }
 

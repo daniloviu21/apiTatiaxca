@@ -3,7 +3,7 @@ const pool = require('../config/db');
 class Tables {
 
     static async getTables() {
-        const result = await pool.query('SELECT * FROM mesas');
+        const result = await pool.query('SELECT * FROM mesas WHERE deleted_at IS NULL');
         return result.rows;
     }
 

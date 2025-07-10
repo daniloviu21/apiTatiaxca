@@ -5,7 +5,7 @@ require('dotenv').config();
 class Users {
 
     static async getUsers() {
-        const result = await pool.query('SELECT * FROM usuarios');
+        const result = await pool.query('SELECT * FROM usuarios WHERE deleted_at IS NULL');
         return result.rows;
     }
 

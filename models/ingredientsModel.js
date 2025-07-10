@@ -3,7 +3,7 @@ const pool = require('../config/db');
 class Ingredients {
 
     static async getIngredients() {
-        const result = await pool.query('SELECT * FROM ingredientes');
+        const result = await pool.query('SELECT * FROM ingredientes WHERE deleted_at IS NULL');
         return result.rows;
     }
 
