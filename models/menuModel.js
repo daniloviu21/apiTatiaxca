@@ -3,15 +3,40 @@ const pool = require('../config/db');
 class Menu {
 
     static async getAll() {
-        const query = `SELECT m.id, m.nombre, m.descripcion, m.precio, m.id_categoria, m.imagen_url AS imagen, c.nombre AS categoria,
-            COALESCE(json_agg(DISTINCT jsonb_build_object('id', ing.id, 'nombre', ing.nombre, 'cantidad', mi.cantidad)) FILTER (WHERE mi.id_ingrediente IS NOT NULL),'[]') AS ingredientes,
-            COALESCE(json_agg(DISTINCT jsonb_build_object('id', ins.id, 'nombre', ins.nombre, 'cantidad', ms.cantidad)) FILTER (WHERE ms.id_insumo IS NOT NULL),'[]') AS insumos
-            FROM menu m JOIN categorias c ON m.id_categoria = c.id
+        const query = `
+            SELECT 
+                m.id, 
+                m.nombre, 
+                m.descripcion, 
+                m.precio, 
+                m.id_categoria, 
+                m.imagen_url AS imagen, 
+                c.nombre AS categoria,
+
+                COALESCE(json_agg(DISTINCT jsonb_build_object(
+                    'id', ing.id, 
+                    'nombre', ing.nombre, 
+                    'cantidad', mi.cantidad,
+                    'unidad', ing.unidad  
+                )) FILTER (WHERE mi.id_ingrediente IS NOT NULL), '[]') AS ingredientes,
+
+                COALESCE(json_agg(DISTINCT jsonb_build_object(
+                    'id', ins.id, 
+                    'nombre', ins.nombre, 
+                    'cantidad', ms.cantidad,
+                    'unidad', ins.unidad  
+                )) FILTER (WHERE ms.id_insumo IS NOT NULL), '[]') AS insumos
+
+            FROM menu m 
+            JOIN categorias c ON m.id_categoria = c.id
             LEFT JOIN menu_ingredientes mi ON m.id = mi.id_menu
             LEFT JOIN ingredientes ing ON mi.id_ingrediente = ing.id
             LEFT JOIN menu_insumos ms ON m.id = ms.id_menu
             LEFT JOIN insumos ins ON ms.id_insumo = ins.id
-            WHERE m.deleted_at IS NULL GROUP BY m.id, c.nombre ORDER BY m.nombre;`;
+            WHERE m.deleted_at IS NULL 
+            GROUP BY m.id, c.nombre 
+            ORDER BY m.nombre;
+        `;
 
         const result = await pool.query(query);
         return result.rows;
