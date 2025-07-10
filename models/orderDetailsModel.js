@@ -44,6 +44,12 @@ class OrderDetails {
         const result = await pool.query('DELETE FROM detalle_ordenes WHERE id = $1 RETURNING *', [id]);
         return result.rows[0];
     }
+
+    static async updateEstado(id, estado_preparacion) {
+        const result = await pool.query(`UPDATE detalle_ordenes SET estado_preparacion = $1 WHERE id = $2 RETURNING *`,[estado_preparacion, id]);
+        return result.rows[0];
+    }
+
 }
 
 module.exports = OrderDetails;
