@@ -41,8 +41,15 @@ class OrderDetails {
     }
 
     static async delete(id) {
-        const result = await pool.query('DELETE FROM detalle_ordenes WHERE id = $1 RETURNING *', [id]);
-        return result.rows[0];
+        const result = await pool.query('SELECT id_orden FROM detalle_ordenes WHERE id = $1', [id]);
+        const idOrden = result.rows[0]?.id_orden;
+
+        await pool.query('DELETE FROM detalle_ordenes WHERE id = $1', [id]);
+        const suma = await pool.query('SELECT SUM(subtotal) AS total FROM detalle_ordenes WHERE id_orden = $1',[idOrden]);
+        const nuevoTotal = suma.rows[0]?.total || 0;
+
+        await pool.query('UPDATE ordenes SET total = $1 WHERE id = $2', [nuevoTotal, idOrden]);
+        return { idOrden, nuevoTotal };
     }
 
     static async updateEstado(id, estado_preparacion) {
