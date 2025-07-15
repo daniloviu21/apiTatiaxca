@@ -4,6 +4,7 @@ const OrdersController = require('../controllers/ordersController');
 
 router.get('/orders', OrdersController.getAllOrders);
 router.get('/orders/:id', OrdersController.getOrderById);
+router.get('/mesa/:id_mesa', OrdersController.getActiveByTable);
 router.post('/orders', OrdersController.createOrder);
 router.post('/orders/full', OrdersController.createOrderWithDetails);
 router.put('/orders/:id', OrdersController.updateOrder);

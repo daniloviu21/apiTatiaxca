@@ -94,6 +94,21 @@ class OrdersController {
         }
     }
 
+    static async getActiveByTable(req, res) {
+    try {
+        const id_mesa = req.params.id_mesa;
+        const orden = await Orders.getActiveOrderByTable(id_mesa);
+
+        if (!orden) {
+        return res.status(404).json({ message: "No hay orden activa para esta mesa" });
+        }
+
+        return res.json(orden);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+    }
+
 }
 
 module.exports = OrdersController;

@@ -40,6 +40,12 @@ class Orders {
         const update = await pool.query(`UPDATE ordenes SET total = $1, updated_at = NOW() WHERE id = $2 RETURNING *`, [total, id_orden]);
         return update.rows[0];
     }
+
+    static async getActiveOrderByTable(id_mesa) {
+        const query = `SELECT * FROM ordenes WHERE id_mesa = $1 AND id_estatus IN (1, 2) AND deleted_at IS NULL ORDER BY id DESC LIMIT 1`;
+        const result = await pool.query(query, [id_mesa]);
+        return result.rows[0];
+    }
     
 }
 
