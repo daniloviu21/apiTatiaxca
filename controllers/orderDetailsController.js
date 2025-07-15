@@ -22,23 +22,11 @@ class OrderDetailsController {
     }
 
     static async create(req, res) {
-        const client = await require('../config/db').connect();
         try {
-            const { id_menu, id_orden, cantidad, subtotal, comentario } = req.body;
-            await client.query('BEGIN');
-
-            const detalle = await OrderDetails.create({ id_menu, id_orden, cantidad, subtotal, comentario }, client);
-            await client.query(`UPDATE ordenes SET id_estatus = 1, updated_at = NOW() WHERE id = $1 AND id_estatus = 2`, [id_orden]);
-            await Orders.recalcularTotal(id_orden);
-
-            await client.query('COMMIT');
-            res.status(201).json(detalle);
+            const order = await OrderDetails.create(req.body);
+            res.status(201).json(order);
         } catch (e) {
-            await client.query('ROLLBACK');
-            console.error('Error en OrderDetailsController.create:', e);
             res.status(500).json({ error: e.message });
-        } finally {
-            client.release();
         }
     }
 
