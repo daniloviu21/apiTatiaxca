@@ -23,8 +23,9 @@ class OrderDetailsController {
 
     static async create(req, res) {
         try {
-            const order = await OrderDetails.create(req.body);
-            res.status(201).json(order);
+            const orderDetail = await OrderDetails.create(req.body);
+            await Orders.recalcularTotal(req.body.id_orden); 
+            res.status(201).json(orderDetail);
         } catch (e) {
             res.status(500).json({ error: e.message });
         }
