@@ -41,8 +41,11 @@ class OrderDetailsController {
 
     static async delete(req, res) {
         try {
-            const result = await OrderDetails.delete(req.params.id);
-            res.json({ message: 'Producto eliminado', totalActualizado: result.nuevoTotal });
+            const detalle = await OrderDetails.delete(req.params.id);
+            if (!detalle) return res.status(404).json({ message: 'No encontrado' });
+            await Orders.recalcularTotal(detalle.id_orden);
+
+            res.json({ message: 'Eliminado correctamente y total actualizado' });
         } catch (e) {
             res.status(500).json({ error: e.message });
         }

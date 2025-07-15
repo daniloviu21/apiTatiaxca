@@ -32,6 +32,14 @@ class Orders {
         const result = await pool.query(`UPDATE ordenes SET deleted_at = NOW() WHERE id = $1 AND deleted_at IS NULL RETURNING *`, [id]);
         return result.rows[0];
     }
+
+    static async recalcularTotal(id_orden) {
+        const result = await pool.query(`SELECT COALESCE(SUM(subtotal), 0) AS total FROM detalle_ordenes WHERE id_orden = $1`, [id_orden]);
+        const total = parseFloat(result.rows[0].total);
+
+        const update = await pool.query(`UPDATE ordenes SET total = $1, updated_at = NOW() WHERE id = $2 RETURNING *`, [total, id_orden]);
+        return update.rows[0];
+    }
     
 }
 

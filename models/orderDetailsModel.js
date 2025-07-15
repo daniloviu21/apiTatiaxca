@@ -49,7 +49,7 @@ class OrderDetails {
         const nuevoTotal = suma.rows[0]?.total || 0;
 
         await pool.query('UPDATE ordenes SET total = $1 WHERE id = $2', [nuevoTotal, idOrden]);
-        return { idOrden, nuevoTotal };
+        return { id_orden: idOrden, nuevoTotal };
     }
 
     static async updateEstado(id, estado_preparacion) {
