@@ -1,4 +1,5 @@
 const OrderDetails = require('../models/orderDetailsModel');
+const Orders = require('../models/ordersModel');
 
 class OrderDetailsController {
 
