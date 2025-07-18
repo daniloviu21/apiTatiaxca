@@ -40,7 +40,7 @@ class OrderDetails {
 
     static async create(data, client = pool) {
         const { id_menu, id_orden, cantidad, subtotal, comentario, sin_ingredientes } = data;
-        const result = await client.query(`INSERT INTO detalle_ordenes (id_menu, id_orden, cantidad, subtotal, comentario, sin_ingredientes) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`, [id_menu, id_orden, cantidad, subtotal, comentario, sin_ingredientes]);
+        const result = await client.query(`INSERT INTO detalle_ordenes (id_menu, id_orden, cantidad, subtotal, comentario, sin_ingredientes) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,[id_menu, id_orden, cantidad, subtotal, comentario, sin_ingredientes || []]);
         return result.rows[0];
     }
 
