@@ -28,6 +28,11 @@ class OrderDetails {
         return result.rows;
     }
 
+    static async findById(id, client = pool) {
+        const result = await client.query('SELECT * FROM detalle_ordenes WHERE id = $1', [id]);
+        return result.rows[0];
+    }
+
     static async create(data, client = pool) {
         const { id_menu, id_orden, cantidad, subtotal, comentario } = data;
         const result = await client.query(`INSERT INTO detalle_ordenes (id_menu, id_orden, cantidad, subtotal, comentario) VALUES ($1, $2, $3, $4, $5) RETURNING *`, [id_menu, id_orden, cantidad, subtotal, comentario]);

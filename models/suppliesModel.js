@@ -24,6 +24,17 @@ class Supplies {
         return result.rows[0];
     }
 
+    static async descontarPorMenu(id_menu, cantidad, client = pool) {
+        const query = `SELECT i.id, i.stock, mi.cantidad FROM menu_insumos mi
+        JOIN insumos i ON mi.id_insumo = i.id WHERE mi.id_menu = $1`;
+        const result = await client.query(query, [id_menu]);
+
+        for (const row of result.rows) {
+        const cantidadDescontar = row.cantidad * cantidad;
+        await client.query(`UPDATE insumos SET stock = stock - $1 WHERE id = $2`,[cantidadDescontar, row.id]);
+        }
+    }
+
 }
 
 module.exports = Supplies;

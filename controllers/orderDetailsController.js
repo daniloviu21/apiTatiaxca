@@ -1,5 +1,6 @@
 const OrderDetails = require('../models/orderDetailsModel');
 const Orders = require('../models/ordersModel');
+const Supplies = require('../models/suppliesModel');
 
 class OrderDetailsController {
 
@@ -54,13 +55,40 @@ class OrderDetailsController {
     }
 
     static async updateEstado(req, res) {
+        const client = await require('../config/db').connect();
         try {
             const { estado_preparacion } = req.body;
-            const detalle = await OrderDetails.updateEstado(req.params.id, estado_preparacion);
-            if (!detalle) return res.status(404).json({ message: 'Detalle no encontrado' });
+            const id_detalle = req.params.id;
+
+            await client.query('BEGIN');
+
+            const detalle = await OrderDetails.updateEstado(id_detalle, estado_preparacion, client);
+
+            if (!detalle) {
+            await client.query('ROLLBACK');
+            return res.status(404).json({ message: 'Detalle no encontrado' });
+            }
+
+            if (estado_preparacion === 'Preparando') {
+            const detalleCompleto = await OrderDetails.findById(id_detalle, client);
+
+            if (!detalleCompleto) {
+                await client.query('ROLLBACK');
+                return res.status(404).json({ message: 'Detalle no encontrado' });
+            }
+
+            const { id_menu, cantidad } = detalleCompleto;
+
+            await Supplies.descontarPorMenu(id_menu, cantidad, client);
+            }
+
+            await client.query('COMMIT');
             return res.json(detalle);
         } catch (e) {
+            await client.query('ROLLBACK');
             res.status(500).json({ error: e.message });
+        } finally {
+            client.release();
         }
     }
 
