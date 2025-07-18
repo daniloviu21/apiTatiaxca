@@ -43,6 +43,18 @@ class OrderDetailsController {
         }
     }
 
+    static async delete(req, res) {
+            try {
+                const detalle = await OrderDetails.delete(req.params.id);
+                if (!detalle) return res.status(404).json({ message: 'No encontrado' });
+                await Orders.recalcularTotal(detalle.id_orden);
+
+                res.json({ message: 'Eliminado correctamente y total actualizado' });
+            } catch (e) {
+                res.status(500).json({ error: e.message });
+            }
+        }
+
     static async updateEstado(req, res) {
         const client = await require('../config/db').connect();
         try {
@@ -80,7 +92,6 @@ class OrderDetailsController {
             client.release();
         }
     }
-
 
 }
 
