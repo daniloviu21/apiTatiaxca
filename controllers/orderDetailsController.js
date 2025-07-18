@@ -1,6 +1,7 @@
 const OrderDetails = require('../models/orderDetailsModel');
 const Orders = require('../models/ordersModel');
 const Supplies = require('../models/suppliesModel');
+const Ingredients = require('../models/ingredientsModel');
 
 class OrderDetailsController {
 
@@ -42,18 +43,6 @@ class OrderDetailsController {
         }
     }
 
-    static async delete(req, res) {
-        try {
-            const detalle = await OrderDetails.delete(req.params.id);
-            if (!detalle) return res.status(404).json({ message: 'No encontrado' });
-            await Orders.recalcularTotal(detalle.id_orden);
-
-            res.json({ message: 'Eliminado correctamente y total actualizado' });
-        } catch (e) {
-            res.status(500).json({ error: e.message });
-        }
-    }
-
     static async updateEstado(req, res) {
         const client = await require('../config/db').connect();
         try {
@@ -62,28 +51,28 @@ class OrderDetailsController {
 
             await client.query('BEGIN');
 
-            const detalle = await OrderDetails.updateEstado(id_detalle, estado_preparacion, client);
-
-            if (!detalle) {
-            await client.query('ROLLBACK');
-            return res.status(404).json({ message: 'Detalle no encontrado' });
-            }
-
-            if (estado_preparacion === 'Preparando') {
-            const detalleCompleto = await OrderDetails.findById(id_detalle, client);
-
-            if (!detalleCompleto) {
+            const detalleActualizado = await OrderDetails.updateEstado(id_detalle, estado_preparacion, client);
+            if (!detalleActualizado) {
                 await client.query('ROLLBACK');
                 return res.status(404).json({ message: 'Detalle no encontrado' });
             }
 
-            const { id_menu, cantidad } = detalleCompleto;
+            if (estado_preparacion === 'Preparando') {
+                const detalle = await OrderDetails.getDetalleById(id_detalle, client);
+                const { id_menu, cantidad, sin_ingredientes } = detalle;
 
-            await Supplies.descontarPorMenu(id_menu, cantidad, client);
+                await Supplies.descontarPorMenu(id_menu, cantidad, client);
+
+                await Ingredients.descontarPorMenuFiltrado(
+                    id_menu,
+                    cantidad,
+                    sin_ingredientes || [],
+                    client
+                );
             }
 
             await client.query('COMMIT');
-            return res.json(detalle);
+            return res.json(detalleActualizado);
         } catch (e) {
             await client.query('ROLLBACK');
             res.status(500).json({ error: e.message });
@@ -91,6 +80,7 @@ class OrderDetailsController {
             client.release();
         }
     }
+
 
 }
 

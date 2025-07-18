@@ -24,6 +24,18 @@ class Ingredients {
         return result.rows[0];
     }
 
+    static async descontarPorMenuFiltrado(id_menu, cantidad, omitidos = [], client = pool) {
+        const query = `SELECT i.id, i.stock, mi.cantidad, i.nombre FROM menu_ingredientes mi JOIN ingredientes i ON mi.id_ingrediente = i.id WHERE mi.id_menu = $1`;
+        const result = await client.query(query, [id_menu]);
+
+        for (const row of result.rows) {
+            if (!omitidos.includes(row.nombre)) {
+                const cantidadDescontar = row.cantidad * cantidad;
+                await client.query(`UPDATE ingredientes SET stock = stock - $1 WHERE id = $2`,[cantidadDescontar, row.id]);
+            }
+        }
+    }
+
 }
 
 module.exports = Ingredients;
