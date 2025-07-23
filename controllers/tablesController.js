@@ -56,6 +56,18 @@ class TablesController {
         }
     }
 
+    static async restoreTable(req, res){
+        try {
+            const table = await Tables.restore(req.params.id);
+            if (!table) {
+                return res.status(404).json({message: "Mesa no encontrada o ya activa!"});
+            }
+            return res.json({message: "Mesa reactivada!", mesa: table});
+        } catch (e) {
+            res.status(500).json({error: e.message});
+        }
+    }
+
 }
 
 module.exports = TablesController;

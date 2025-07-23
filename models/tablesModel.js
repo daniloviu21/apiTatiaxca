@@ -3,7 +3,7 @@ const pool = require('../config/db');
 class Tables {
 
     static async getTables() {
-        const result = await pool.query('SELECT * FROM mesas WHERE deleted_at IS NULL');
+        const result = await pool.query('SELECT * FROM mesas');
         return result.rows;
     }
 
@@ -25,7 +25,12 @@ class Tables {
     }
 
     static async delete(id){
-        const result = await pool.query('DELETE FROM mesas WHERE id = $1 RETURNING *', [id]);
+        const result = await pool.query(`UPDATE mesas SET deleted_at = NOW(), updated_at = NOW() WHERE id = $1 AND deleted_at IS NULL RETURNING *`, [id]);
+        return result.rows[0];
+    }
+
+    static async restore(id){
+        const result = await pool.query(`UPDATE mesas SET deleted_at = NULL, updated_at = NOW() WHERE id = $1 AND deleted_at IS NOT NULL RETURNING *`, [id]);
         return result.rows[0];
     }
 
