@@ -3,7 +3,7 @@ const pool = require('../config/db');
 class Supplies {
 
     static async getSupplies() {
-        const result = await pool.query('SELECT * FROM insumos WHERE deleted_at IS NULL');
+        const result = await pool.query('SELECT * FROM insumos');
         return result.rows;
     }
 
@@ -30,9 +30,14 @@ class Supplies {
         const result = await client.query(query, [id_menu]);
 
         for (const row of result.rows) {
-        const cantidadDescontar = row.cantidad * cantidad;
-        await client.query(`UPDATE insumos SET stock = stock - $1 WHERE id = $2`,[cantidadDescontar, row.id]);
+            const cantidadDescontar = row.cantidad * cantidad;
+            await client.query(`UPDATE insumos SET stock = stock - $1, deleted_at = CASE WHEN stock - $1 <= 0 THEN now() ELSE deleted_at END WHERE id = $2`, [cantidadDescontar, row.id]);
         }
+    }
+
+    static async activar(id){
+        const result = await pool.query(`UPDATE insumos SET deleted_at = null, updated_at = now() WHERE id = $1 RETURNING *`, [id]);
+        return result.rows[0];
     }
 
 }

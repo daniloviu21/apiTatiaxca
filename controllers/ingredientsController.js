@@ -44,6 +44,16 @@ class IngredientsController {
         }
     }
 
+    static async activateIngredient(req, res) {
+        try {
+            const ingredient = await Ingredients.activar(req.params.id);
+            if (!ingredient) return res.status(404).json({ message: "Ingrediente no encontrado!" });
+            return res.json(ingredient);
+        } catch (e) {
+            res.status(500).json({ error: e.message });
+        }
+    }
+
 }
 
 module.exports = IngredientsController;

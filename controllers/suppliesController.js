@@ -44,6 +44,16 @@ class SuppliesController {
         }
     }
 
+    static async activateSupply(req, res) {
+        try {
+            const supply = await Supplies.activar(req.params.id);
+            if (!supply) return res.status(404).json({ message: "Insumo no encontrado!" });
+            return res.json(supply);
+        } catch (e) {
+            res.status(500).json({ error: e.message });
+        }
+    }
+
 }
 
 module.exports = SuppliesController;

@@ -3,7 +3,7 @@ const pool = require('../config/db');
 class Ingredients {
 
     static async getIngredients() {
-        const result = await pool.query('SELECT * FROM ingredientes WHERE deleted_at IS NULL');
+        const result = await pool.query('SELECT * FROM ingredientes');
         return result.rows;
     }
 
@@ -35,9 +35,14 @@ class Ingredients {
 
             if (!omitidosNormalizados.includes(nombreNormalizado)) {
                 const cantidadDescontar = row.cantidad * cantidad;
-                await client.query(`UPDATE ingredientes SET stock = stock - $1 WHERE id = $2`,[cantidadDescontar, row.id]);
+                await client.query(`UPDATE ingredientes SET stock = stock - $1, deleted_at = CASE WHEN stock - $1 <= 0 THEN now() ELSE deleted_at END WHERE id = $2`, [cantidadDescontar, row.id]);
             }
         }
+    }
+
+    static async activar(id){
+        const result = await pool.query(`UPDATE ingredientes SET deleted_at = null, updated_at = now() WHERE id = $1 RETURNING *`, [id]);
+        return result.rows[0];
     }
 
 }
