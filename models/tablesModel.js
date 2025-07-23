@@ -25,7 +25,7 @@ class Tables {
     }
 
     static async delete(id){
-        const result = await pool.query('UPDATE mesas SET deleted_at = now() WHERE id = $1 and deleted_at is null RETURNING *', [id]);
+        const result = await pool.query('DELETE FROM mesas WHERE id = $1 RETURNING *', [id]);
         return result.rows[0];
     }
 

@@ -96,7 +96,7 @@ CREATE TABLE Empleados (
 
 CREATE TABLE Mesas (
     id SERIAL PRIMARY KEY,
-    numero VARCHAR(2) UNIQUE,
+    numero VARCHAR(2),
     ubicacion VARCHAR(50),
     estado VARCHAR(50),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
