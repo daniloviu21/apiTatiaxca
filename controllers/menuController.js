@@ -176,6 +176,7 @@ class MenuController {
                 precio: menu.precio,
                 imagen_url: menu.imagen_url,
                 categoria: menu.categoria,
+                disponible: menu.disponible,
                 ingredientes,
                 insumos
             });
