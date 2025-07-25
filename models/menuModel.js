@@ -104,29 +104,59 @@ class Menu {
     }
 
     static async getGroupedByCategory() {
-        const result = await pool.query(`SELECT c.id AS categoria_id,c.nombre AS categoria_nombre,m.id AS producto_id,m.nombre AS producto_nombre,m.descripcion,m.precio,m.imagen_url FROM menu m
+        const result = await pool.query(`
+            SELECT 
+                c.id AS categoria_id,
+                c.nombre AS categoria_nombre,
+                m.id AS producto_id,
+                m.nombre AS producto_nombre,
+                m.descripcion,
+                m.precio,
+                m.imagen_url,
+
+                -- Disponible solo si ningún insumo/ingrediente tiene stock <= 0 o está eliminado
+                NOT EXISTS (
+                    SELECT 1
+                    FROM menu_ingredientes mi
+                    JOIN ingredientes i ON mi.id_ingrediente = i.id
+                    WHERE mi.id_menu = m.id AND (i.stock <= 0 OR i.deleted_at IS NOT NULL)
+                ) 
+                AND NOT EXISTS (
+                    SELECT 1
+                    FROM menu_insumos ms
+                    JOIN insumos s ON ms.id_insumo = s.id
+                    WHERE ms.id_menu = m.id AND (s.stock <= 0 OR s.deleted_at IS NOT NULL)
+                ) AS disponible
+
+            FROM menu m
             INNER JOIN categorias c ON m.id_categoria = c.id
-            WHERE m.deleted_at IS NULL AND c.deleted_at IS NULL ORDER BY c.id, m.id`);
+            WHERE m.deleted_at IS NULL AND c.deleted_at IS NULL
+            ORDER BY c.id, m.id
+        `);
+
         const agrupado = [];
 
         for (const row of result.rows) {
             let categoria = agrupado.find(c => c.id === row.categoria_id);
             if (!categoria) {
-            categoria = {
-                id: row.categoria_id,
-                nombre: row.categoria_nombre,
-                productos: []
-            };
-            agrupado.push(categoria);
+                categoria = {
+                    id: row.categoria_id,
+                    nombre: row.categoria_nombre,
+                    productos: []
+                };
+                agrupado.push(categoria);
             }
+
             categoria.productos.push({
-            id: row.producto_id,
-            nombre: row.producto_nombre,
-            descripcion: row.descripcion,
-            precio: row.precio,
-            imagen: row.imagen_url
+                id: row.producto_id,
+                nombre: row.producto_nombre,
+                descripcion: row.descripcion,
+                precio: row.precio,
+                imagen: row.imagen_url,
+                disponible: row.disponible
             });
         }
+
         return agrupado;
     }
 
