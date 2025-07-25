@@ -74,26 +74,44 @@ class Menu {
                 m.id_categoria,
                 m.imagen_url,
                 c.nombre AS categoria,
+
+                NOT EXISTS (
+                    SELECT 1
+                    FROM menu_ingredientes mi
+                    JOIN ingredientes i ON mi.id_ingrediente = i.id
+                    WHERE mi.id_menu = m.id AND (i.stock <= 0 OR i.deleted_at IS NOT NULL)
+                )
+                AND NOT EXISTS (
+                    SELECT 1
+                    FROM menu_insumos ms
+                    JOIN insumos s ON ms.id_insumo = s.id
+                    WHERE ms.id_menu = m.id AND (s.stock <= 0 OR s.deleted_at IS NOT NULL)
+                ) AS disponible,
+
                 COALESCE((
                     SELECT json_agg(jsonb_build_object(
                         'id', ing.id,
                         'nombre', ing.nombre,
-                        'cantidad', mi.cantidad
+                        'cantidad', mi.cantidad,
+                        'unidad', ing.unidad
                     ))
                     FROM menu_ingredientes mi
                     JOIN ingredientes ing ON mi.id_ingrediente = ing.id
                     WHERE mi.id_menu = m.id
                 ), '[]') AS ingredientes,
+
                 COALESCE((
                     SELECT json_agg(jsonb_build_object(
                         'id', ins.id,
                         'nombre', ins.nombre,
-                        'cantidad', ms.cantidad
+                        'cantidad', ms.cantidad,
+                        'unidad', ins.unidad
                     ))
                     FROM menu_insumos ms
                     JOIN insumos ins ON ms.id_insumo = ins.id
                     WHERE ms.id_menu = m.id
                 ), '[]') AS insumos
+
             FROM menu m
             JOIN categorias c ON m.id_categoria = c.id
             WHERE m.deleted_at IS NULL AND m.id = $1
@@ -114,7 +132,6 @@ class Menu {
                 m.precio,
                 m.imagen_url,
 
-                -- Disponible solo si ningún insumo/ingrediente tiene stock <= 0 o está eliminado
                 NOT EXISTS (
                     SELECT 1
                     FROM menu_ingredientes mi
