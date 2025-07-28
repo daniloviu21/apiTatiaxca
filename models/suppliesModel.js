@@ -8,14 +8,14 @@ class Supplies {
     }
 
     static async create(data) {
-        const {nombre, unidad, stock} = data;
-        const result = await pool.query('INSERT INTO insumos (nombre, unidad, stock) VALUES ($1, $2, $3) RETURNING *', [nombre, unidad, stock]);
+        const {nombre, unidad, stock, es_desechable} = data;
+        const result = await pool.query('INSERT INTO insumos (nombre, unidad, stock, es_desechable) VALUES ($1, $2, $3, $4) RETURNING *', [nombre, unidad, stock, es_desechable]);
         return result.rows[0];
     }
 
     static async update(id, data){
-        const {nombre, unidad, stock} = data;
-        const result = await pool.query('UPDATE insumos SET nombre = $1, unidad = $2, stock = $3, updated_at = now() WHERE id = $4 and deleted_at is null RETURNING *', [nombre, unidad, stock, id]);
+        const {nombre, unidad, stock, es_desechable} = data;
+        const result = await pool.query('UPDATE insumos SET nombre = $1, unidad = $2, stock = $3, es_desechable = $4, updated_at = now() WHERE id = $4 and deleted_at is null RETURNING *', [nombre, unidad, stock, es_desechable, id]);
         return result.rows[0];
     }
 
@@ -32,6 +32,15 @@ class Supplies {
         for (const row of result.rows) {
             const cantidadDescontar = row.cantidad * cantidad;
             await client.query(`UPDATE insumos SET stock = stock - $1, deleted_at = CASE WHEN stock - $1 <= 0 THEN now() ELSE deleted_at END WHERE id = $2`, [cantidadDescontar, row.id]);
+        }
+    }
+
+    static async descontarDesechablesPorMenu(id_menu, cantidad_menu, client = pool) {
+        const insumos = await client.query(`SELECT s.id, s.stock, mi.cantidad FROM menu_insumos mi JOIN insumos s ON s.id = mi.id_insumo WHERE mi.id_menu = $1 AND s.es_desechable = true`, [id_menu]);
+
+        for (const item of insumos.rows) {
+            const cantidadDescontar = item.cantidad * cantidad_menu;
+            await client.query(`UPDATE insumos SET stock = stock - $1 WHERE id = $2`, [cantidadDescontar, item.id]);
         }
     }
 

@@ -17,8 +17,8 @@ class Orders {
     }
 
     static async create(data) {
-        const {fecha,total,propina,descuento,tipo_cliente,id_estatus,id_mesa,id_mesero} = data;
-        const result = await pool.query(`INSERT INTO ordenes (fecha, total, propina, descuento, tipo_cliente,id_estatus, id_mesa, id_mesero) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`, [fecha, total, propina, descuento, tipo_cliente, id_estatus, id_mesa, id_mesero]);
+        const {fecha,total,propina,descuento,tipo_cliente,id_estatus,id_mesa,id_mesero, para_llevar} = data;
+        const result = await pool.query(`INSERT INTO ordenes (fecha, total, propina, descuento, tipo_cliente,id_estatus, id_mesa, id_mesero, para_llevar) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`, [fecha, total, propina, descuento, tipo_cliente, id_estatus, id_mesa, id_mesero, para_llevar]);
         return result.rows[0];
     }
 
