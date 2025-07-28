@@ -149,13 +149,13 @@ class Menu {
                     SELECT 1
                     FROM menu_ingredientes mi
                     JOIN ingredientes i ON mi.id_ingrediente = i.id
-                    WHERE mi.id_menu = m.id AND (i.stock <= 0 OR i.deleted_at IS NOT NULL)
+                    WHERE mi.id_menu = m.id AND (i.stock < mi.cantidad OR i.deleted_at IS NOT NULL)
                 ) 
                 AND NOT EXISTS (
                     SELECT 1
                     FROM menu_insumos ms
                     JOIN insumos s ON ms.id_insumo = s.id
-                    WHERE ms.id_menu = m.id AND (s.stock <= 0 OR s.deleted_at IS NOT NULL)
+                    WHERE ms.id_menu = m.id AND (s.stock < ms.cantidad OR s.deleted_at IS NOT NULL)
                 ) AS disponible
 
             FROM menu m
