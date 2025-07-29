@@ -38,6 +38,7 @@ CREATE TABLE Insumos (
     nombre VARCHAR(50),
     unidad VARCHAR(50),
     stock INT,
+    es_desechable BOOLEAN DEFAULT false,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP,
     deleted_at TIMESTAMP
@@ -120,6 +121,7 @@ CREATE TABLE Ordenes (
     propina DECIMAL(10,2),
     descuento DECIMAL(6,2),
     tipo_cliente VARCHAR(30),
+    para_llevar BOOLEAN DEFAULT false,
     id_estatus INT,
     id_mesa INT,
     id_mesero INT,

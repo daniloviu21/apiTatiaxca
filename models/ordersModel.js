@@ -23,8 +23,8 @@ class Orders {
     }
 
     static async update(id, data) {
-        const {fecha,total,propina,descuento,tipo_cliente,id_estatus,id_mesa,id_mesero} = data;
-        const result = await pool.query(`UPDATE ordenes SET fecha = $1, total = $2, propina = $3, descuento = $4, tipo_cliente = $5, id_estatus = $6, id_mesa = $7, id_mesero = $8, updated_at = NOW() WHERE id = $9 AND deleted_at IS NULL RETURNING *`, [fecha, total, propina, descuento, tipo_cliente, id_estatus, id_mesa, id_mesero, id]);
+        const {fecha,total,propina,descuento,tipo_cliente,id_estatus,id_mesa,id_mesero, para_llevar} = data;
+        const result = await pool.query(`UPDATE ordenes SET fecha = $1, total = $2, propina = $3, descuento = $4, tipo_cliente = $5, id_estatus = $6, id_mesa = $7, id_mesero = $8, para_llevar = $9, updated_at = NOW() WHERE id = $10 AND deleted_at IS NULL RETURNING *`, [fecha, total, propina, descuento, tipo_cliente, id_estatus, id_mesa, id_mesero, para_llevar, id]);
         return result.rows[0];
     }
 

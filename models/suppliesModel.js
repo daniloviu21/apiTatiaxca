@@ -15,7 +15,7 @@ class Supplies {
 
     static async update(id, data){
         const {nombre, unidad, stock, es_desechable} = data;
-        const result = await pool.query('UPDATE insumos SET nombre = $1, unidad = $2, stock = $3, es_desechable = $4, updated_at = now() WHERE id = $4 and deleted_at is null RETURNING *', [nombre, unidad, stock, es_desechable, id]);
+        const result = await pool.query('UPDATE insumos SET nombre = $1, unidad = $2, stock = $3, es_desechable = $4, updated_at = now() WHERE id = $5 and deleted_at is null RETURNING *', [nombre, unidad, stock, es_desechable, id]);
         return result.rows[0];
     }
 
