@@ -34,7 +34,7 @@ class OrderDetails {
     }
 
     static async getDetalleById(id, client = pool) {
-        const result = await client.query(`SELECT id_menu, cantidad, sin_ingredientes FROM detalle_ordenes WHERE id = $1`, [id]);
+        const result = await client.query(`SELECT id_menu, cantidad, sin_ingredientes, id_orden FROM detalle_ordenes WHERE id = $1`, [id]);
         return result.rows[0];
     }
 
