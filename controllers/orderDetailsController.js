@@ -81,10 +81,10 @@ class OrderDetailsController {
                     client
                 );
 
-                if (orden?.para_llevar === false) {
-                    await Supplies.descontarPorMenu(id_menu, cantidad, client, true);
-                } else {
-                    await Supplies.descontarPorMenu(id_menu, cantidad, client, false);
+                await Supplies.descontarPorMenu(id_menu, cantidad, client);
+
+                if (orden?.para_llevar === true) {
+                    await Supplies.descontarDesechablesPorMenu(id_menu, cantidad, client);
                 }
             }
 
