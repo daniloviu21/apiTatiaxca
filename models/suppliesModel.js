@@ -25,7 +25,7 @@ class Supplies {
     }
 
     static async descontarPorMenu(id_menu, cantidad, client = pool) {
-        const query = `SELECT i.id, i.stock, mi.cantidad FROM menu_insumos mi JOIN insumos i ON mi.id_insumo = i.id WHERE mi.id_menu = $1 AND i.es_desechable = false`;
+        const query = `SELECT i.id, i.stock, mi.cantidad, i.nombre FROM menu_insumos mi JOIN insumos i ON mi.id_insumo = i.id WHERE mi.id_menu = $1 AND i.es_desechable = false AND i.deleted_at IS NULL`;
         const result = await client.query(query, [id_menu]);
 
         for (const row of result.rows) {
@@ -34,13 +34,19 @@ class Supplies {
         }
     }
 
-    static async descontarDesechablesPorMenu(id_menu, cantidad_menu, client = pool) {
-        const insumos = await client.query(`SELECT s.id, s.stock, mi.cantidad FROM menu_insumos mi JOIN insumos s ON s.id = mi.id_insumo WHERE mi.id_menu = $1 AND s.es_desechable = true`, [id_menu]);
+    static async descontarDesechablesPorMenu(id_menu, cantidad, client = pool) {
+        const query = `SELECT i.id, i.stock, mi.cantidad, i.nombre FROM menu_insumos mi JOIN insumos i ON mi.id_insumo = i.id WHERE mi.id_menu = $1 AND i.es_desechable = true AND i.deleted_at IS NULL`;
+        const result = await client.query(query, [id_menu]);
 
-        for (const item of insumos.rows) {
-            const cantidadDescontar = item.cantidad * cantidad_menu;
-            console.log(`[STOCK] Descontando DESECHABLE (para llevar): ${item.nombre} (ID: ${item.id}) - Cantidad: ${cantidadDescontar}`);
-            await client.query(`UPDATE insumos SET stock = stock - $1, deleted_at = CASE WHEN stock - $1 <= 0 THEN now() ELSE deleted_at END WHERE id = $2 AND deleted_at IS NULL`, [cantidadDescontar, item.id]);
+        for (const row of result.rows) {
+            const cantidadDescontar = row.cantidad * cantidad;
+            console.log(`[INSUMO] DESECHABLE: ${row.nombre} - ${cantidadDescontar}`);
+            await client.query(`
+                UPDATE insumos 
+                SET stock = stock - $1, 
+                    deleted_at = CASE WHEN stock - $1 <= 0 THEN now() ELSE deleted_at END 
+                WHERE id = $2
+            `, [cantidadDescontar, row.id]);
         }
     }
 

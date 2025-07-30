@@ -74,7 +74,6 @@ class OrderDetailsController {
                 const { id_menu, cantidad, sin_ingredientes, id_orden } = detalle;
 
                 const orden = await Orders.getById(id_orden);
-                const esParaLlevar = orden?.para_llevar;
 
                 await Ingredients.descontarPorMenuFiltrado(
                     id_menu,
@@ -85,7 +84,7 @@ class OrderDetailsController {
 
                 await Supplies.descontarPorMenu(id_menu, cantidad, client);
 
-                if (esParaLlevar) {
+                if (orden?.para_llevar === true) {
                     await Supplies.descontarDesechablesPorMenu(id_menu, cantidad, client);
                 }
             }
