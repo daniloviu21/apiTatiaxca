@@ -25,8 +25,7 @@ class Supplies {
     }
 
     static async descontarPorMenu(id_menu, cantidad, client = pool) {
-        const query = `SELECT i.id, i.stock, mi.cantidad FROM menu_insumos mi
-        JOIN insumos i ON mi.id_insumo = i.id WHERE mi.id_menu = $1`;
+        const query = `SELECT i.id, i.stock, mi.cantidad FROM menu_insumos mi JOIN insumos i ON mi.id_insumo = i.id WHERE mi.id_menu = $1 AND i.es_desechable = false`;
         const result = await client.query(query, [id_menu]);
 
         for (const row of result.rows) {

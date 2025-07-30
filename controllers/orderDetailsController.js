@@ -76,16 +76,18 @@ class OrderDetailsController {
                 const orden = await Orders.getById(id_orden);
                 const esParaLlevar = orden?.para_llevar;
 
-                if (esParaLlevar) {
-                    await Supplies.descontarDesechablesPorMenu(id_menu, cantidad, client);
-                }
-
                 await Ingredients.descontarPorMenuFiltrado(
                     id_menu,
                     cantidad,
                     sin_ingredientes || [],
                     client
                 );
+
+                await Supplies.descontarPorMenu(id_menu, cantidad, client);
+
+                if (esParaLlevar) {
+                    await Supplies.descontarDesechablesPorMenu(id_menu, cantidad, client);
+                }
             }
 
             await client.query('COMMIT');
