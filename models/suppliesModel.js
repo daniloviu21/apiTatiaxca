@@ -39,7 +39,8 @@ class Supplies {
 
         for (const item of insumos.rows) {
             const cantidadDescontar = item.cantidad * cantidad_menu;
-            await client.query(`UPDATE insumos SET stock = stock - $1 WHERE id = $2`, [cantidadDescontar, item.id]);
+            console.log(`[STOCK] Descontando DESECHABLE (para llevar): ${item.nombre} (ID: ${item.id}) - Cantidad: ${cantidadDescontar}`);
+            await client.query(`UPDATE insumos SET stock = stock - $1, deleted_at = CASE WHEN stock - $1 <= 0 THEN now() ELSE deleted_at END WHERE id = $2 AND deleted_at IS NULL`, [cantidadDescontar, item.id]);
         }
     }
 
