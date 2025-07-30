@@ -83,7 +83,10 @@ class OrderDetailsController {
 
                 await Supplies.descontarPorMenu(id_menu, cantidad, client);
 
-                if (orden?.para_llevar === true) {
+                console.log(`[DEBUG] para_llevar de orden ${orden.id}:`, orden.para_llevar);
+                console.log(`[DEBUG] Tipo de dato:`, typeof orden.para_llevar);
+
+                if (orden?.para_llevar === true || orden?.para_llevar === 'true' || orden?.para_llevar === 1) {
                     await Supplies.descontarDesechablesPorMenu(id_menu, cantidad, client);
                 }
             }

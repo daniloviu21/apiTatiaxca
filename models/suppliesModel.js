@@ -46,6 +46,7 @@ class Supplies {
     }
 
     static async descontarDesechablesPorMenu(id_menu, cantidad, client = pool) {
+        console.log(`[DEBUG] Ejecutando descuento DESECHABLES para menú ${id_menu} x${cantidad}`);
         const query = `
             SELECT i.id, i.stock, mi.cantidad, i.nombre 
             FROM menu_insumos mi 
