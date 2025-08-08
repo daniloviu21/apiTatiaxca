@@ -79,6 +79,17 @@ class EmployeesController {
         }
     }
 
+    static async getEmployeeByUserId(req, res) {
+        try {
+            const { userId } = req.params;
+            const employee = await Employees.findByUserId(userId);
+            if (!employee) return res.status(404).json({ message: 'Empleado no encontrado!' });
+            return res.json(employee);
+        } catch (e) {
+            res.status(500).json({ error: e.message });
+        }
+    }
+
 }
 
 module.exports = EmployeesController;

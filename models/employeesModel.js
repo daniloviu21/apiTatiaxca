@@ -31,6 +31,17 @@ const pool = require('../config/db');
         return result.rows[0];
     }
 
+    static async findByUserId(userId) {
+        const q = `
+            SELECT e.*
+            FROM empleados e
+            WHERE e.id_usuario = $1
+            AND e.deleted_at IS NULL
+            LIMIT 1`;
+        const result = await pool.query(q, [userId]);
+        return result.rows[0];
+    }
+
 }
 
 module.exports = Employees;
