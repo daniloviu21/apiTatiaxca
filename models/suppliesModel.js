@@ -25,46 +25,22 @@ class Supplies {
     }
 
     static async descontarPorMenu(id_menu, cantidad, client = pool) {
-        const query = `
-            SELECT i.id, i.stock, mi.cantidad, i.nombre 
-            FROM menu_insumos mi 
-            JOIN insumos i ON mi.id_insumo = i.id 
-            WHERE mi.id_menu = $1 
-            AND i.es_desechable = false 
-            AND i.deleted_at IS NULL`;
-
+        const query = `SELECT i.id, i.stock, mi.cantidad, i.nombre FROM menu_insumos mi JOIN insumos i ON mi.id_insumo = i.id WHERE mi.id_menu = $1 AND i.es_desechable = false AND i.deleted_at IS NULL`;
         const result = await client.query(query, [id_menu]);
 
         for (const row of result.rows) {
             const cantidadDescontar = row.cantidad * cantidad;
-            await client.query(`
-            UPDATE insumos 
-            SET stock = stock - $1, 
-                deleted_at = CASE WHEN stock - $1 <= 0 THEN now() ELSE deleted_at END 
-            WHERE id = $2`, [cantidadDescontar, row.id]);
+            await client.query(`UPDATE insumos SET stock = GREATEST(stock - $1, 0), deleted_at = CASE WHEN (stock - $1) <= 0 THEN now() ELSE deleted_at END WHERE id = $2`, [cantidadDescontar, row.id]);
         }
     }
 
     static async descontarDesechablesPorMenu(id_menu, cantidad, client = pool) {
-        console.log(`[DEBUG] Ejecutando descuento DESECHABLES para menú ${id_menu} x${cantidad}`);
-        const query = `
-            SELECT i.id, i.stock, mi.cantidad, i.nombre 
-            FROM menu_insumos mi 
-            JOIN insumos i ON mi.id_insumo = i.id 
-            WHERE mi.id_menu = $1 
-            AND i.es_desechable = true 
-            AND i.deleted_at IS NULL`;
-
+        const query = `SELECT i.id, i.stock, mi.cantidad, i.nombre FROM menu_insumos mi JOIN insumos i ON mi.id_insumo = i.id WHERE mi.id_menu = $1 AND i.es_desechable = true AND i.deleted_at IS NULL`;
         const result = await client.query(query, [id_menu]);
 
         for (const row of result.rows) {
             const cantidadDescontar = row.cantidad * cantidad;
-            console.log(`[INSUMO] DESECHABLE: ${row.nombre} - ${cantidadDescontar}`);
-            await client.query(`
-            UPDATE insumos 
-            SET stock = stock - $1, 
-                deleted_at = CASE WHEN stock - $1 <= 0 THEN now() ELSE deleted_at END 
-            WHERE id = $2`, [cantidadDescontar, row.id]);
+            await client.query(`UPDATE insumos SET stock = GREATEST(stock - $1, 0), deleted_at = CASE WHEN (stock - $1) <= 0 THEN now() ELSE deleted_at END WHERE id = $2`, [cantidadDescontar, row.id]);
         }
     }
 

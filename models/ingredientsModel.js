@@ -32,10 +32,9 @@ class Ingredients {
 
         for (const row of result.rows) {
             const nombreNormalizado = row.nombre.trim().toLowerCase();
-
             if (!omitidosNormalizados.includes(nombreNormalizado)) {
                 const cantidadDescontar = row.cantidad * cantidad;
-                await client.query(`UPDATE ingredientes SET stock = stock - $1, deleted_at = CASE WHEN stock - $1 <= 0 THEN now() ELSE deleted_at END WHERE id = $2`, [cantidadDescontar, row.id]);
+                await client.query(`UPDATE ingredientes SET stock = GREATEST(stock - $1, 0), deleted_at = CASE WHEN (stock - $1) <= 0 THEN now() ELSE deleted_at END WHERE id = $2`, [cantidadDescontar, row.id]);
             }
         }
     }
